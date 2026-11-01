@@ -13,4 +13,8 @@ __pycache__/
 
 venv
 
-/infrastructure/influxdb/data/*
+# local secrets and data of the Docker services (see infrastructure/.env.example)
+/infrastructure/.env
+/infrastructure/influxdb/data/
+/infrastructure/broker-data/
+/infrastructure/broker-log/

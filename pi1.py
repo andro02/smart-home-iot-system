@@ -19,7 +19,7 @@ try:
 except:
     pass
 
-HOSTNAME = "localhost" 
+HOSTNAME = "192.168.107.98" 
 PORT = 1883
 
 batch = []
@@ -135,7 +135,7 @@ def dms_callback(key):
 def dus1_callback(distance): 
     add_to_batch("Sensors/DUS1",
                 create_payload(settings['DUS1'], "Distance", distance))
-    # print(f"[DUS1] Dist: {distance:.2f} cm")
+    print(f"[DUS1] Dist: {distance:.2f} cm")
 
 def dpir1_callback(motion_state):
     value = 1 if motion_state else 0

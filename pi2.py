@@ -19,7 +19,7 @@ try:
 except:
     pass
 
-HOSTNAME = "localhost" 
+HOSTNAME = "192.168.107.98" 
 PORT = 1883
 batch = []
 counter_lock = threading.Lock()
@@ -119,7 +119,7 @@ def gyro_callback(accel, rotation, event, cfg):
                  create_payload(cfg, "Acceleration", str(accel)))
     add_to_batch("Sensors/Gyro", 
                  create_payload(cfg, "Rotation", str(rotation)))
-    # print(f"[{sensor_settings['name']}] Data sent") #da ne bi spamovalo
+    # print(f"[{cfg['name']}] Data sent") #da ne bi spamovalo
 
 def on_connect(client, userdata, flags, rc):
     client.subscribe("Commands/PI2/#")

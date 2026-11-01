@@ -96,6 +96,8 @@ Each sensor/actuator also has a software simulator, so the full system can be ru
 
 ### Infrastructure
 
+Copy `infrastructure/.env.example` to `infrastructure/.env` and fill in the passwords and an InfluxDB token (any long random string). Docker Compose creates the database with them, and the server reads the same file.
+
 ```bash
 cd infrastructure
 docker compose up -d
