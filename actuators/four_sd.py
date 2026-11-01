@@ -30,22 +30,68 @@ class FourSD(object):
                     '8': (1,1,1,1,1,1,1),
                     '9': (1,1,1,1,0,1,1)}
         
-        self.current_time_str = "0000"
+        # inic stanje
+        self.current_text = "    " 
+        self.is_blinking = False
+        self.is_blank = False # Koristi se da ugasi cifre dok treperi
         self.running = True
+        
+        # nit za osvezavanje ekrana
         self.thread = threading.Thread(target=self._refresh_display)
         self.thread.start()
+        
+        # nit koja kontrolise treperenje
+        self.blink_thread = threading.Thread(target=self._blink_loop)
+        self.blink_thread.start()
 
     def _refresh_display(self):
         while self.running:
-            n = time.ctime()[11:13] + time.ctime()[14:16] # uzimmamo sate i minute za vreme
-            s = str(n).rjust(4)
+            # ako je u ciklusu treperenja "ugaseno", preskocimo crtanje
+            if self.is_blank:
+                time.sleep(0.01)
+                continue
+                
+            # Uklanjamo dvotacku iz vremena "0230"
+            s = self.current_text.replace(":", "").rjust(4, ' ')
+            
             for digit in range(4):
+                if digit >= len(s):
+                    continue
+                    
+                char = s[digit]
+                if char not in self.num:
+                    char = ' ' # ako stigne neki nepoznat znak, stavi razmak
+
                 for loop in range(0, 7):
-                    GPIO.output(self.segments[loop], self.num[s[digit]][loop]) # pali/gasi 7 dioda tako da formiraju broj
-                GPIO.output(self.digits[digit], 0) # spusta se napon, tj pali cifra
+                    GPIO.output(self.segments[loop], self.num[char][loop])
+                    
+                GPIO.output(self.digits[digit], 0) # pali cifru
                 time.sleep(0.001)
-                GPIO.output(self.digits[digit], 1) # gasi cifru, prelazi na sledecu
+                GPIO.output(self.digits[digit], 1) # gasi cifru
+
+    def _blink_loop(self):
+        while self.running:
+            if self.is_blinking:
+                self.is_blank = not self.is_blank # upaljeno/ugaseno
+                time.sleep(0.5) # treperi svakih pola sekunde
+            else:
+                self.is_blank = False
+                time.sleep(0.1)
+
+    # poziva pi2
+    def display_text(self, text):
+        self.is_blinking = False
+        self.current_text = str(text)
+
+    def blink(self, text="00:00"):
+        self.current_text = str(text)
+        self.is_blinking = True
+
+    def clear(self):
+        self.is_blinking = False
+        self.current_text = "    "
 
     def stop(self):
         self.running = False
         self.thread.join()
+        self.blink_thread.join()

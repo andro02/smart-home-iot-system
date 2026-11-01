@@ -17,7 +17,7 @@ try:
 except:
     pass
 
-HOSTNAME = "localhost" 
+HOSTNAME = "192.168.107.98" 
 PORT = 1883
 batch = []
 counter_lock = threading.Lock()

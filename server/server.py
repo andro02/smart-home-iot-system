@@ -8,15 +8,22 @@ import json
 import threading
 import time
 import ast
+import os
+from pathlib import Path
+
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 CORS(app)
 
 # --- INFLUXDB SETUP ---
-token = "B8HDBR5Sh9cCibUUGyUAM2rDL4ajESUs_UyUHpRp52OT3mL1IriRtRCD2cnnix-09BGs1_OU9xv9HMNXnWDSGg=="
+# the token and bucket come from infrastructure/.env (the same file Docker
+# Compose uses to create the database); see infrastructure/.env.example
+load_dotenv(Path(__file__).resolve().parent.parent / "infrastructure" / ".env")
+token = os.environ["INFLUXDB_TOKEN"]
 org = "FTN"
-url = "http://localhost:8086"
-bucket = "iot_db"
+url = os.environ.get("INFLUXDB_URL", "http://localhost:8086")
+bucket = os.environ.get("INFLUXDB_DB", "iot_db")
 influxdb_client = InfluxDBClient(url=url, token=token, org=org)
 
 # --- GLOBALNO STANJE SISTEMA (STATE MACHINE) ---
